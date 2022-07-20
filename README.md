@@ -63,7 +63,7 @@
 ## DB 모델링
 - ERD
 
-![image](https://user-images.githubusercontent.com/80298502/179881342-5c9a32b3-3ab1-45ca-a619-c4446f25b1d6.png)
+![erd](https://user-images.githubusercontent.com/80298502/179910766-fba92963-e6b7-42d8-a887-64adc388d398.JPG)
 
 <br/>
 
