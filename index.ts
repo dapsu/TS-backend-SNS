@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import { sequelize } from './models';
+import routes from './routes/index';
 
 const app = express();
 
@@ -24,6 +25,8 @@ if (prod) {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use('/api', routes);
 
 app.get('/', (req, res) => {
   res.send('백엔드 정상 동작!');
