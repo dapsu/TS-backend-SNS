@@ -10,6 +10,11 @@ class User extends Model {
   public readonly createAt!: Date;
   public readonly updateAt!: Date;
 
+  public dataValues!: {
+    userId: string,
+    password: string
+}
+
   public addPost!: HasManyAddAssociationMixin<Post, number>;      // Post와 관계 형성 때 생성되는 메소드
 }
 
@@ -39,6 +44,7 @@ User.init({
 // 관계 형성 
 export const associate = (db: dbType) => {
   db.User.hasMany(db.Post);
+  db.User.hasOne(db.RefreshToken);
 };
 
 export default User;
