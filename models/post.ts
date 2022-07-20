@@ -11,6 +11,7 @@ class Post extends Model {
   public state!: boolean;
   public readonly createAt!: Date;
   public readonly updateAt!: Date;
+  public readonly deleteAt!: Date;
 
   public UserUserId!: string;
 
@@ -33,16 +34,12 @@ Post.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
-  },
-  state: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
   }
 }, {
   sequelize,
   modelName: 'Post',
   tableName: 'posts',
+  paranoid: true,
   charset: 'utf8',
   collate: 'utf8_general_ci'
 });
