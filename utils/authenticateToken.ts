@@ -26,8 +26,13 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
           UserUserId: decoded!.id
         }
       });
-      jwt.verify(refreshToken!.dataValues.refreshToken, process.env.JWT_REFRESH_TOKEN!, (error: any, user: any) => {
+      jwt.verify(refreshToken!.dataValues.refreshToken, process.env.JWT_REFRESH_TOKEN!, async (error: any, user: any) => {
         if (error) {
+          await RefreshToken.destroy({
+            where: {
+              UserUserId: decoded!.id
+            }
+          });
           return res
             .status(403)
             .json({
