@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { generateAccessToken, generateRefreshToken } from '../utils/generateToken';
 import User from '../models/user';
@@ -22,7 +21,7 @@ class UserController {
       });
       if (exUser) {
         return res
-          .status(403)
+          .status(409)
           .json({
             message: '이미 사용 중인 아이디입니다.'
           });
@@ -80,14 +79,14 @@ class UserController {
 
       const accessToken = generateAccessToken(userId);
       
-      const exToken = await RefreshToken.findOne({
+      const exToken = await RefreshToken.findOne({ 
         where: {
           UserUserId: userId
         }
       });
-      if (!exToken) {
+      if (!exToken) {   // 처음 로그인하는 유저라면 refresh 토큰 발급 후 DB에 저장
         const refreshToken = generateRefreshToken(userId);
-        await RefreshToken.create({   // refrsh token DB에 저장
+        await RefreshToken.create({
           refreshToken: refreshToken,
           UserUserId: userId
         });
