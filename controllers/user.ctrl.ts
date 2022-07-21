@@ -107,6 +107,30 @@ class UserController {
         });
     }
   }
+
+  // 로그아웃 시 리프레시 토큰 삭제
+  static async logout(req: Request, res: Response) {
+    const userId = req.user.id;
+    try {
+      await RefreshToken.destroy({
+        where: {
+          UserUserId: userId
+        }
+      });
+      return res
+        .status(200)
+        .json({
+          message: '로그아웃되었습니다.'
+        });
+    } catch (err) {
+      console.error(err);
+      return res
+        .status(500)
+        .json({
+          message: '서버 에러입니다. 에러가 지속되면 관리자에게 문의주세요.'
+        });
+    }
+  }
 }
 
 export default UserController;
