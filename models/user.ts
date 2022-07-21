@@ -13,7 +13,7 @@ class User extends Model {
   public dataValues!: {
     userId: string,
     password: string
-}
+  }
 
   public addPost!: HasManyAddAssociationMixin<Post, number>;      // Post와 관계 형성 때 생성되는 메소드
 }

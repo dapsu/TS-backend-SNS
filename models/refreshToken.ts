@@ -10,7 +10,10 @@ class RefreshToken extends Model {
 
   public UserUserId!: string;
 
-  public [0]: any;
+  public dataValues!: {
+    UserUserId: string,
+    refreshToken: string
+  }
 }
 
 RefreshToken.init({
