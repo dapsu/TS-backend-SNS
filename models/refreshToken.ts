@@ -9,6 +9,8 @@ class RefreshToken extends Model {
   public readonly updatedAt!: Date;
 
   public UserUserId!: string;
+
+  public [0]: any;
 }
 
 RefreshToken.init({
