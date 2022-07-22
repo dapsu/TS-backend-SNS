@@ -9,9 +9,9 @@ class Post extends Model {
   public title!: string;
   public content!: string;
   public views!: number;
-  public readonly createAt!: Date;
-  public readonly updateAt!: Date;
-  public readonly deleteAt!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+  public readonly deletedAt!: Date;
 
   public UserUserId!: string;
 
