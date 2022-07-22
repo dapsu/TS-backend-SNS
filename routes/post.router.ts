@@ -5,5 +5,6 @@ import authenticateToken from '../utils/authenticateToken';
 const router = express.Router();
 
 router.get('/', authenticateToken, PostController.createPost);
+router.patch('/:postId', authenticateToken, PostController.setPost);
 
 export default router;
