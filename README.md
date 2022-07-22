@@ -63,14 +63,14 @@
 ## DB 모델링
 - ERD
 
-![erd](https://user-images.githubusercontent.com/80298502/179910766-fba92963-e6b7-42d8-a887-64adc388d398.JPG)
+![erdJPG](https://user-images.githubusercontent.com/80298502/180430904-73e2e18c-5a5c-4315-b990-a2f2241e1bd5.JPG)
 
 <br/>
 
 ## API 설계
 
 ### 유저 회원가입
-* URL: base-url/user/join
+* URL: base-url/users/join
 * METHOD: POST
 * Request
 ```
@@ -89,7 +89,7 @@
 ```
 
 ### 유저 로그인
-* URL: base-url/user/login
+* URL: base-url/users/login
 * METHOD: POST
 * Request
 ```
@@ -103,15 +103,17 @@
 ```
 {
   messege: "로그인되었습니다."
+  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJp..."
 }
 ```
 
-### 게시 생성
-* URL: base-url/post
+### 게시글 생성
+* URL: base-url/posts
 * METHOD: POST
 * Request
 ```
 {
+  title: "브런치 카페 존맛",
   content: "꿀꿀꿀꿀",
   hashtags: "#맛집,#서울,#브런치 카페,#주말"
 }
@@ -125,11 +127,12 @@
 ```
 
 ### 게시글 수정
-* URL: base-url/post/:postId
+* URL: base-url/posts/:postId
 * METHOD: PATCH
 * Request
 ```
 {
+  title: "브런치 카페 존맛",
   content: "낄낄낄낄",
   hashtags: "#맛집,#서울,#브런치 카페,#주말"
 }
@@ -143,7 +146,7 @@
 ```
 
 ### 게시글 삭제
-* URL: base-url/post/:postId
+* URL: base-url/posts/:postId
 * METHOD: PATCH
 * Request
 ```
@@ -160,7 +163,7 @@
 ```
 
 ### 삭제 게시글 복구
-* URL: base-url/post/:postId
+* URL: base-url/posts/:postId
 * METHOD: PATCH
 * Request
 ```
@@ -177,7 +180,7 @@
 ```
 
 ### 특정 게시글 조회
-* URL: base-url/post/:postId
+* URL: base-url/posts/:postId
 * METHOD: GET
 * Request
 ```
@@ -193,7 +196,7 @@
 ```
 
 ### 게시글 목록 조회
-* URL: base-url/post/list
+* URL: base-url/posts
 * METHOD: GET
 * Request
 ```
