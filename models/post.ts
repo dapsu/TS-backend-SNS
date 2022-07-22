@@ -9,12 +9,15 @@ class Post extends Model {
   public title!: string;
   public content!: string;
   public views!: number;
-  public state!: boolean;
   public readonly createAt!: Date;
   public readonly updateAt!: Date;
   public readonly deleteAt!: Date;
 
   public UserUserId!: string;
+
+  public dataValues!: {
+    postId: number
+  }
 
   public addLike!: HasManyAddAssociationMixin<Like, number>;
   public removeLike!: HasManyAddAssociationMixin<Like, number>;
