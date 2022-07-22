@@ -6,6 +6,7 @@ import Like from "./like";
 
 class Post extends Model {
   public readonly postId!: number;
+  public title!: string;
   public content!: string;
   public views!: number;
   public state!: boolean;
@@ -25,6 +26,10 @@ Post.init({
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true
+  },
+  title: {
+    type: DataTypes.STRING(50),
+    allowNull: false
   },
   content: {
     type: DataTypes.TEXT,
