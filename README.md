@@ -73,170 +73,249 @@
 * URL: base-url/users/join
 * METHOD: POST
 * Request
-```
-{
-  userId: "goodday@gamil.com",
-  password: "123qweasd!",
-  name: "찰리푸스"
-}
-```
+
+	```
+	{
+	  userId: "goodday@gamil.com",
+	  password: "123qweasd!",
+	  name: "찰리푸스"
+	}
+	```
 * Response
-	* status: 201
-```
-{
-  messege: "회원가입이 완료되었습니다."
-}
-```
+  * status: 201
+	
+	```
+	{
+	  messege: "회원가입이 완료되었습니다."
+	}
+	```
 
 ### 유저 로그인
 * URL: base-url/users/login
 * METHOD: POST
 * Request
-```
-{
-  userId: "goodday@gamil.com",
-  password: "123qweasd!"
-}
-```
+
+	```
+	{
+	  userId: "goodday@gamil.com",
+	  password: "123qweasd!"
+	}
+	```
+
 * Response
 	* status: 200
-```
-{
-  messege: "로그인되었습니다."
-  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJp..."
-}
-```
+
+	```
+	{
+	  messege: "로그인되었습니다."
+	  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJp..."
+	}
+	```
 
 ### 게시글 생성
 * URL: base-url/posts
 * METHOD: POST
 * Request
-```
-{
-  title: "브런치 카페 존맛",
-  content: "꿀꿀꿀꿀",
-  hashtags: "#맛집,#서울,#브런치 카페,#주말"
-}
-```
+
+	```
+	{
+	  title: "브런치 카페 존맛",
+	  content: "꿀꿀꿀꿀",
+	  hashtags: "#맛집,#서울,#브런치 카페,#주말"
+	}
+	```
+
 * Response
 	* status: 200
-```
-{
-  messege: "포스팅되었습니다."
-}
-```
+
+	```
+	{
+	  messege: "포스팅되었습니다."
+	}
+	```
 
 ### 게시글 수정
 * URL: base-url/posts/:postId
 * METHOD: PATCH
 * Request
-```
-{
-  title: "브런치 카페 존맛",
-  content: "낄낄낄낄",
-  hashtags: "#맛집,#서울,#브런치 카페,#주말"
-}
-```
+
+	```
+	{
+	  title: "브런치 카페 존맛",
+	  content: "낄낄낄낄",
+	  hashtags: "#맛집,#서울,#브런치 카페,#주말"
+	}
+	```
+
 * Response
 	* status: 200
-```
-{
-  messege: "해당 게시글을 수정했습니다."
-}
-```
+
+	```
+	{
+	  messege: "해당 게시글을 수정했습니다."
+	}
+	```
 
 ### 게시글 삭제
 * URL: base-url/posts/:postId
 * METHOD: PATCH
 * Request
-```
-{
-  state: false
-}
-```
+
+	```
+	{
+	  state: false
+	}
+	```
+
 * Response
 	* status: 200
-```
-{
-  messege: "해당 게시글을 삭제했습니다."
-}
-```
+
+	```
+	{
+	  messege: "해당 게시글을 삭제했습니다."
+	}
+	```
 
 ### 삭제 게시글 복구
 * URL: base-url/posts/:postId
 * METHOD: PATCH
 * Request
-```
-{
-  state: true
-}
-```
+
+	```
+	{
+	  state: true
+	}
+	```
+
 * Response
 	* status: 200
-```
-{
-  messege: "해당 게시글을 복구했습니다."
-}
-```
 
-### 특정 게시글 조회
+	```
+	{
+	  messege: "해당 게시글을 복구했습니다."
+	}
+	```
+
+### 게시글 상세보기
 * URL: base-url/posts/:postId
 * METHOD: GET
 * Request
-```
 
-```
+	```
+
+	```
+
 * Response
 	* status: 200
-```
-{
-  title: "브런치 카페 존맛",
-  content: "낄낄낄낄",
-  hashtags: "#맛집,#서울,#브런치 카페,#주말"
-}
-```
+
+	```
+	{
+	  title: "브런치 카페 존맛",
+	  content: "낄낄낄낄",
+	  hashtags: "#맛집,#서울,#브런치 카페,#주말",
+	  views: 7,
+	  likes: 1
+	}
+	```
+
+### 게시글 좋아요, 좋아요 취소
+* URL: base-url/posts/likes/:postId
+* METHOD: PATCH
+* Request
+
+	```
+
+	```
+
+* Response
+	* status: 200
+
+	```
+	// 좋아요 누를  시
+	{
+	  messege: "이 글을 좋아합니다!"
+	}
+
+	// 좋아요 취소 시
+	{
+	  messege: "좋아요를 취소합니다!"
+	}
+	```
 
 ### 게시글 목록 조회
 * URL: base-url/posts
 * METHOD: GET
 * Request
-```
 
-```
+	```
+
+	```
+
 * Response
 	* status: 200
-```
-[
-  {
-    title: "브런치 카페 존맛",
-    content: "낄낄낄낄",
-    hashtags: "#맛집,#서울,#브런치 카페,#주말"
-  },
-  {
-    title: "광교 호수공원 데이트!",
-    content: "광교호수공원 좋다!",
-    hashtags: "#광교,#호수공원"
-  },
-  ...
-]
-```
+	
+	```
+	[
+	  {
+		title: "브런치 카페 존맛",
+		writer: "찰리푸스",
+		hashtags: "#맛집,#서울,#브런치 카페,#주말",
+		createdAt: "2022-07-22 12:14",
+		views: 7,
+		likes: 1
+	  },
+	  {
+		title: "힐링힐링",
+		writer: "전정국",
+		hashtags: "#힐링,#주말,#날씨,#쾌적",
+		createdAt: "2022-07-24 13:05",
+		views: 7,
+		likes: 1
+	  },
+	  ...
+	]
+	```
 
 <br/>
 
 ## 필수 기능 구현
 
 ### 유저 인증 기능 JWT 방식 구현
-> 추후 추가 예정
+- 로그인 시 유효한 사용자라면 사용자에게 access token 전달하고, refresh token은 DB refreshToken 테이블에 저장
+  - access token 유효 기간: 15분
+  - refresh token 유효 기간: 60일
+  - access token 만료 시, refresh token을 기반으로 재발급
+- 사용자 인증이 필요한 api에 접근할 때, ```authenticateToken()``` 미들웨어를 통해 JWT 유효성 검증 실시
+  - 클라이언트에서는 api를 요청할 때마다 ```request headers에 "Authorization" : " Bearer eyJhbGciOi..."``` 를 담아서 요청한다.
+  
+<br/>
 
 ### 게시글 관련 로직 구현
-> 추후 추가 예정
+> [API 설계 참조](#API-설계)
 
 <br/>
 
 ## 부가 기능 구현
 
 ### 게시글 목록 4가지 기능 동작
-> 추후 추가 예정
+> 게시글 목록 조회는 정렬, 검색, 필터링, 페이지기능이 동시에 적용 가능해야 한다.
+
+#### 정렬
+* query parameter: url?orderBy=
+* 파라미터 값이 ```ascending``` 이면 오름차순 정렬
+* 파라미터 값이 ```descending``` 이면 내림차순 정렬
+
+#### 검색
+* query parameter: url?search=
+* title(제목)에 파라미터 값의 키워드를 포함한 게시글 조회
+
+#### 필터링
+* query parameter: url?hashtags=
+* 해당 키워드를 포함한 해시태그를 가진 게시글 조회
+
+#### 페이지 기능
+* query parameter: url?pages=
+* ```10```, ```20```, ```50``` 의 값 선택할 수 있도록 설정
 
 <br/>
 
@@ -245,5 +324,6 @@
 ### redis 활용
 
 ### docker 작업
+
 
 
