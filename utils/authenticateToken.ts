@@ -26,6 +26,15 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
           UserUserId: decoded!.id
         }
       });
+
+      if (!refreshToken) {
+        return res
+          .status(401)
+          .json({
+            message: '로그인이 필요합니다.'
+          });
+      }
+
       jwt.verify(refreshToken!.dataValues.refreshToken, process.env.JWT_REFRESH_TOKEN!, async (error: any, user: any) => {
         if (error) {
           await RefreshToken.destroy({
