@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { Sequelize } from 'sequelize';
 import { Request, Response, NextFunction } from 'express';
 import Post from '../models/post';
 import Like from '../models/like';
@@ -218,7 +219,7 @@ class PostController {
         }
       });
 
-      const likes = await Like.findAll({
+      const likers = await Like.findAll({
         where: {
           PostPostId: postId
         },
@@ -231,7 +232,7 @@ class PostController {
           title: post.title,
           content: post.content,
           views: post.views + 1,
-          likes: likes.length
+          likers: likers.map(obj => obj.dataValues.liker)
         });
     } catch (err) {
       console.error(err);
@@ -270,7 +271,7 @@ class PostController {
           await Like.destroy({
             where: {
               liker: userId,
-            PostPostId: postId
+              PostPostId: postId
             }
           });
           return res
@@ -278,6 +279,51 @@ class PostController {
             .json({
               message: '좋아요를 취소합니다!'
             });
+        });
+    } catch (err) {
+      console.error(err);
+      return res
+        .status(500)
+        .json({
+          message: '서버 에러입니다. 에러가 지속되면 관리자에게 문의주세요.'
+        });
+    }
+  }
+
+  // 게시글 목록 조회
+  static async getList(req: Request, res: Response) {
+    try {
+      // TODO: 페이지네이션, 검색, 필터링 기능 추가
+      const pages = req.query.pages;
+      const orderBy = req.query.orderBy;
+      const search = req.query.search;
+      const filtering = req.query.filtering;
+      let result;   // 조회 최종 결과물
+
+      if (!orderBy || orderBy === 'ascending') {
+        result = await Post.findAll({
+          include: [{
+            model: Like,
+            attributes: ['liker']
+          }],
+          attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
+          order: [['createdAt', 'ASC']]
+        });
+      } else {
+        result = await Post.findAll({
+          include: [{
+            model: Like,
+            attributes: ['liker']
+          }],
+          attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
+          order: [['createdAt', 'DESC']]
+        });
+      }
+
+      return res
+        .status(200)
+        .json({
+          result
         });
     } catch (err) {
       console.error(err);

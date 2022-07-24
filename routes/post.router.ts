@@ -10,5 +10,6 @@ router.delete('/:postId', authenticateToken, PostController.deletePost);
 router.patch('/restore/:postId', authenticateToken, PostController.restorePost);
 router.get('/:postId', authenticateToken, PostController.getPost);
 router.patch('/likes/:postId', authenticateToken, PostController.likePost);
+router.get('/', authenticateToken, PostController.getList);
 
 export default router;
