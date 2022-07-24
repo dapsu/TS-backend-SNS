@@ -8,6 +8,10 @@ class Like extends Model {
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  public dataValues!: {
+    liker: string;
+  }
+
   public PostPostId!: string;
 }
 
