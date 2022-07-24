@@ -4,7 +4,7 @@ import authenticateToken from '../utils/authenticateToken';
 
 const router = express.Router();
 
-router.get('/', authenticateToken, PostController.createPost);
+router.post('/', authenticateToken, PostController.createPost);
 router.patch('/:postId', authenticateToken, PostController.setPost);
 router.delete('/:postId', authenticateToken, PostController.deletePost);
 router.patch('/restore/:postId', authenticateToken, PostController.restorePost);
