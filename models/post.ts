@@ -6,14 +6,18 @@ import Like from "./like";
 
 class Post extends Model {
   public readonly postId!: number;
+  public title!: string;
   public content!: string;
   public views!: number;
-  public state!: boolean;
-  public readonly createAt!: Date;
-  public readonly updateAt!: Date;
-  public readonly deleteAt!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+  public readonly deletedAt!: Date;
 
   public UserUserId!: string;
+
+  public dataValues!: {
+    postId: number
+  }
 
   public addLike!: HasManyAddAssociationMixin<Like, number>;
   public removeLike!: HasManyAddAssociationMixin<Like, number>;
@@ -25,6 +29,10 @@ Post.init({
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true
+  },
+  title: {
+    type: DataTypes.STRING(50),
+    allowNull: false
   },
   content: {
     type: DataTypes.TEXT,

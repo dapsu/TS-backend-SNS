@@ -7,8 +7,8 @@ class User extends Model {
   public userId!: string;
   public name!: string;
   public password!: string;
-  public readonly createAt!: Date;
-  public readonly updateAt!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 
   public dataValues!: {
     userId: string,
