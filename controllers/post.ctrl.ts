@@ -1,8 +1,9 @@
 import dotenv from 'dotenv';
-import { Sequelize } from 'sequelize';
+import sequelize from 'sequelize';
 import { Request, Response, NextFunction } from 'express';
 import Post from '../models/post';
 import Like from '../models/like';
+import Hashtag from '../models/hashtag';
 
 dotenv.config();
 
@@ -12,13 +13,30 @@ class PostController {
   static async createPost(req: Request, res: Response) {
     try {
       const userId = req.user.id;
-      const { title, content, hashtags } = req.body;
+      let { title, content, hashtags } = req.body;
+      hashtags = hashtags.split(',');
 
-      await Post.create({   // posts 테이블에 데이터 추가
+      const newPost = await Post.create({   // posts 테이블에 데이터 추가
         title: title,
         content: content,
         UserUserId: userId
       });
+
+      for (const hashtag of hashtags) {
+        const exHashtag = await Hashtag.findOne({
+          where: {
+            tagName: hashtag
+          }
+        });
+        if (exHashtag) {
+          // newPost.addHashtags(exHashtag);  // TODO: add메소드 타입 정의
+          continue;
+        }
+        const newHashtag = await Hashtag.create({
+          tagName: hashtag
+        });
+        // newPost.addHashtags(newHashtag);   // TODO: add메소드 타입 정의
+      }
 
       return res
         .status(200)
@@ -41,7 +59,8 @@ class PostController {
     try {
       const userId = req.user.id;
       const postId = req.params.postId;
-      const { title, content, hashtags } = req.body;
+      let { title, content, hashtags } = req.body;
+      hashtags = hashtags.split(',');
 
       await Post.findOne({
         where: {
@@ -309,7 +328,7 @@ class PostController {
           attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
           order: [['createdAt', 'ASC']]
         });
-      } else {
+      } else if (orderBy === 'descending') {
         result = await Post.findAll({
           include: [{
             model: Like,
@@ -318,6 +337,38 @@ class PostController {
           attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
           order: [['createdAt', 'DESC']]
         });
+      }
+      
+      if (search) {   // 검색 키워드가 존재할 때
+        if (!orderBy || orderBy === 'ascending') {
+          result = await Post.findAll({
+            where: {
+              title: {
+                [sequelize.Op.like]: `%${search}%`
+              }
+            }, 
+            include: [{
+              model: Like,
+              attributes: ['liker']
+            }],
+            attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
+            order: [['createdAt', 'ASC']]
+          });
+        } else if (orderBy === 'descending') {
+          result = await Post.findAll({
+            where: {
+              title: {
+                [sequelize.Op.like]: `%${search}%`
+              }
+            }, 
+            include: [{
+              model: Like,
+              attributes: ['liker']
+            }],
+            attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
+            order: [['createdAt', 'DESC']]
+          });
+        }
       }
 
       return res
