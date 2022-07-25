@@ -312,14 +312,31 @@ class PostController {
   // 게시글 목록 조회
   static async getList(req: Request, res: Response) {
     try {
-      // TODO: 페이지네이션, 검색, 필터링 기능 추가
-      const pages = req.query.pages;
-      const orderBy = req.query.orderBy;
+      let result;   // 조회 최종 결과물
+      const orderBy = req.query.orderBy || 'descending';
       const search = req.query.search;
       const filtering = req.query.filtering;
-      let result;   // 조회 최종 결과물
+      const pages = parseInt(<string>req.query.pages!, 10) || 10;   // 한 페이지에 보여줄 게시글 개수
+      const pageNum = parseInt(<string>req.query.pageNum!, 10) || 1;  // 현재 페이지 번호
+      const skipPages = (pageNum - 1) * pages;
 
-      if (!orderBy || orderBy === 'ascending') {
+      // 예외처리
+      if (Number.isNaN(pages) || Number.isNaN(pageNum)) {
+        return res
+          .status(400)
+          .json({
+            message: 'pages 쿼리 파라미터가 정수형이 아닙니다.'
+          });
+      }
+      if (orderBy !== 'ascending' && orderBy !== 'descending') {
+        return res
+          .status(400)
+          .json({
+            message: 'orderBy 쿼리 파라미터 값이 잘못되었습니다.'
+          });
+      }
+
+      if (orderBy === 'ascending') {
         result = await Post.findAll({
           include: [{
             model: Like,
@@ -338,15 +355,16 @@ class PostController {
           order: [['createdAt', 'DESC']]
         });
       }
-      
-      if (search) {   // 검색 키워드가 존재할 때
-        if (!orderBy || orderBy === 'ascending') {
+
+      // 검색 키워드가 존재할 때
+      if (search) {
+        if (orderBy === 'ascending') {
           result = await Post.findAll({
             where: {
               title: {
                 [sequelize.Op.like]: `%${search}%`
               }
-            }, 
+            },
             include: [{
               model: Like,
               attributes: ['liker']
@@ -360,7 +378,7 @@ class PostController {
               title: {
                 [sequelize.Op.like]: `%${search}%`
               }
-            }, 
+            },
             include: [{
               model: Like,
               attributes: ['liker']
@@ -376,6 +394,18 @@ class PostController {
       result?.forEach(e => {
         e.Likes = e.Likes.length;
       });
+
+      // 페이징 기능
+      let totalPosts = result!.length;
+      if (skipPages >= totalPosts) {
+        return res
+          .status(400)
+          .json({
+            message: 'pages, pageNum 값을 확인해주세요.'
+          });
+      } else {
+        result?.splice(0, skipPages);
+      }
 
       return res
         .status(200)
