@@ -328,6 +328,13 @@ class PostController {
             message: 'pages 쿼리 파라미터가 정수형이 아닙니다.'
           });
       }
+      if (pages !== 10 && pages !== 30 && pages !== 50) {   // 페이지네이션은 10, 30, 50만 가능하도록 설정
+        return res
+          .status(400)
+          .json({
+            message: 'pages 값은 10, 30, 50으로만 설정합니다.'
+          });
+      }
       if (orderBy !== 'ascending' && orderBy !== 'descending') {
         return res
           .status(400)
