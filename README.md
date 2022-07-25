@@ -63,7 +63,7 @@
 ## DB 모델링
 - ERD
 
-![erdJPG](https://user-images.githubusercontent.com/80298502/180430904-73e2e18c-5a5c-4315-b990-a2f2241e1bd5.JPG)
+![image](https://user-images.githubusercontent.com/80298502/180769685-a77c43df-0d85-4d3f-b28b-0281422b0d6b.png)
 
 <br/>
 
@@ -286,7 +286,7 @@
   - refresh token 유효 기간: 60일
   - access token 만료 시, refresh token을 기반으로 재발급
 - 사용자 인증이 필요한 api에 접근할 때, ```authenticateToken()``` 미들웨어를 통해 JWT 유효성 검증 실시
-  - 클라이언트에서는 api를 요청할 때마다 ```request headers에 "Authorization" : " Bearer eyJhbGciOi..."``` 를 담아서 요청한다.
+  - 클라이언트에서는 api를 요청할 때마다 request headers에 ```"Authorization" : " Bearer eyJhbGciOi..."``` 를 담아서 요청한다.
   
 <br/>
 
@@ -309,13 +309,13 @@
 * query parameter: url?search=
 * title(제목)에 파라미터 값의 키워드를 포함한 게시글 조회
 
+#### 페이지 기능
+* query parameter: url?pages=
+* ```10```, ```30```, ```50``` 의 값 선택할 수 있도록 설정
+
 #### 필터링
 * query parameter: url?hashtags=
 * 해당 키워드를 포함한 해시태그를 가진 게시글 조회
-
-#### 페이지 기능
-* query parameter: url?pages=
-* ```10```, ```20```, ```50``` 의 값 선택할 수 있도록 설정
 
 <br/>
 
