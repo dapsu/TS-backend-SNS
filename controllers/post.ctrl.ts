@@ -9,7 +9,6 @@ dotenv.config();
 
 class PostController {
   // 게시글 생성
-  // TODO: 해시태그 기능
   static async createPost(req: Request, res: Response) {
     try {
       const userId = req.user.id;
@@ -29,13 +28,13 @@ class PostController {
           }
         });
         if (exHashtag) {
-          // newPost.addHashtags(exHashtag);  // TODO: add메소드 타입 정의
+          newPost.addHashtags(<any>exHashtag);
           continue;
         }
         const newHashtag = await Hashtag.create({
           tagName: hashtag
         });
-        // newPost.addHashtags(newHashtag);   // TODO: add메소드 타입 정의
+        newPost.addHashtags(<any>newHashtag);
       }
 
       return res
@@ -54,7 +53,6 @@ class PostController {
   }
 
   // 게시글 수정
-  // TODO: 해시태그 기능
   static async setPost(req: Request, res: Response) {
     try {
       const userId = req.user.id;
@@ -412,6 +410,7 @@ class PostController {
           });
       } else {
         result?.splice(0, skipPages);
+        result?.splice(pages, totalPosts);
       }
 
       return res
