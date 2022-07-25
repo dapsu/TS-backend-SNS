@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
+import sequelize from 'sequelize';
 import { Request, Response, NextFunction } from 'express';
 import Post from '../models/post';
 import Like from '../models/like';
+import Hashtag from '../models/hashtag';
 
 dotenv.config();
 
@@ -11,13 +13,30 @@ class PostController {
   static async createPost(req: Request, res: Response) {
     try {
       const userId = req.user.id;
-      const { title, content, hashtags } = req.body;
+      let { title, content, hashtags } = req.body;
+      hashtags = hashtags.split(',');
 
-      await Post.create({   // posts 테이블에 데이터 추가
+      const newPost = await Post.create({   // posts 테이블에 데이터 추가
         title: title,
         content: content,
         UserUserId: userId
       });
+
+      for (const hashtag of hashtags) {
+        const exHashtag = await Hashtag.findOne({
+          where: {
+            tagName: hashtag
+          }
+        });
+        if (exHashtag) {
+          // newPost.addHashtags(exHashtag);  // TODO: add메소드 타입 정의
+          continue;
+        }
+        const newHashtag = await Hashtag.create({
+          tagName: hashtag
+        });
+        // newPost.addHashtags(newHashtag);   // TODO: add메소드 타입 정의
+      }
 
       return res
         .status(200)
@@ -40,7 +59,8 @@ class PostController {
     try {
       const userId = req.user.id;
       const postId = req.params.postId;
-      const { title, content, hashtags } = req.body;
+      let { title, content, hashtags } = req.body;
+      hashtags = hashtags.split(',');
 
       await Post.findOne({
         where: {
@@ -218,7 +238,7 @@ class PostController {
         }
       });
 
-      const likes = await Like.findAll({
+      const likers = await Like.findAll({
         where: {
           PostPostId: postId
         },
@@ -231,7 +251,7 @@ class PostController {
           title: post.title,
           content: post.content,
           views: post.views + 1,
-          likes: likes.length
+          likers: likers.map(obj => obj.dataValues.liker)
         });
     } catch (err) {
       console.error(err);
@@ -270,7 +290,7 @@ class PostController {
           await Like.destroy({
             where: {
               liker: userId,
-            PostPostId: postId
+              PostPostId: postId
             }
           });
           return res
@@ -278,6 +298,126 @@ class PostController {
             .json({
               message: '좋아요를 취소합니다!'
             });
+        });
+    } catch (err) {
+      console.error(err);
+      return res
+        .status(500)
+        .json({
+          message: '서버 에러입니다. 에러가 지속되면 관리자에게 문의주세요.'
+        });
+    }
+  }
+
+  // 게시글 목록 조회
+  static async getList(req: Request, res: Response) {
+    try {
+      let result;   // 조회 최종 결과물
+      const orderBy = req.query.orderBy || 'descending';
+      const search = req.query.search;
+      const filtering = req.query.filtering;
+      const pages = parseInt(<string>req.query.pages!, 10) || 10;   // 한 페이지에 보여줄 게시글 개수
+      const pageNum = parseInt(<string>req.query.pageNum!, 10) || 1;  // 현재 페이지 번호
+      const skipPages = (pageNum - 1) * pages;
+
+      // 예외처리
+      if (Number.isNaN(pages) || Number.isNaN(pageNum)) {
+        return res
+          .status(400)
+          .json({
+            message: 'pages 쿼리 파라미터가 정수형이 아닙니다.'
+          });
+      }
+      if (pages !== 10 && pages !== 30 && pages !== 50) {   // 페이지네이션은 10, 30, 50만 가능하도록 설정
+        return res
+          .status(400)
+          .json({
+            message: 'pages 값은 10, 30, 50으로만 설정합니다.'
+          });
+      }
+      if (orderBy !== 'ascending' && orderBy !== 'descending') {
+        return res
+          .status(400)
+          .json({
+            message: 'orderBy 쿼리 파라미터 값이 잘못되었습니다.'
+          });
+      }
+
+      if (orderBy === 'ascending') {
+        result = await Post.findAll({
+          include: [{
+            model: Like,
+            attributes: ['liker']
+          }],
+          attributes: ['title', 'UserUserId', 'createdAt', 'views'],
+          order: [['createdAt', 'ASC']]
+        });
+      } else if (orderBy === 'descending') {
+        result = await Post.findAll({
+          include: [{
+            model: Like,
+            attributes: ['liker']
+          }],
+          attributes: ['title', 'UserUserId', 'createdAt', 'views'],
+          order: [['createdAt', 'DESC']]
+        });
+      }
+
+      // 검색 키워드가 존재할 때
+      if (search) {
+        if (orderBy === 'ascending') {
+          result = await Post.findAll({
+            where: {
+              title: {
+                [sequelize.Op.like]: `%${search}%`
+              }
+            },
+            include: [{
+              model: Like,
+              attributes: ['liker']
+            }],
+            attributes: ['title', 'UserUserId', 'createdAt', 'views'],
+            order: [['createdAt', 'ASC']]
+          });
+        } else if (orderBy === 'descending') {
+          result = await Post.findAll({
+            where: {
+              title: {
+                [sequelize.Op.like]: `%${search}%`
+              }
+            },
+            include: [{
+              model: Like,
+              attributes: ['liker']
+            }],
+            attributes: ['title', 'UserUserId', 'createdAt', 'views'],
+            order: [['createdAt', 'DESC']]
+          });
+        }
+      }
+
+      // Likes 배열 개수로 바꾸기
+      result = result?.map(e => e.dataValues);
+      result?.forEach(e => {
+        e.Likes = e.Likes.length;
+      });
+
+      // 페이징 기능
+      let totalPosts = result!.length;
+      if (skipPages >= totalPosts) {
+        return res
+          .status(400)
+          .json({
+            message: 'pages, pageNum 값을 확인해주세요.'
+          });
+      } else {
+        result?.splice(0, skipPages);
+      }
+
+      return res
+        .status(200)
+        .json({
+          result
         });
     } catch (err) {
       console.error(err);
