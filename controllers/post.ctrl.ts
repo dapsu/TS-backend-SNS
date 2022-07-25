@@ -325,7 +325,7 @@ class PostController {
             model: Like,
             attributes: ['liker']
           }],
-          attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
+          attributes: ['title', 'UserUserId', 'createdAt', 'views'],
           order: [['createdAt', 'ASC']]
         });
       } else if (orderBy === 'descending') {
@@ -334,7 +334,7 @@ class PostController {
             model: Like,
             attributes: ['liker']
           }],
-          attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
+          attributes: ['title', 'UserUserId', 'createdAt', 'views'],
           order: [['createdAt', 'DESC']]
         });
       }
@@ -351,7 +351,7 @@ class PostController {
               model: Like,
               attributes: ['liker']
             }],
-            attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
+            attributes: ['title', 'UserUserId', 'createdAt', 'views'],
             order: [['createdAt', 'ASC']]
           });
         } else if (orderBy === 'descending') {
@@ -365,11 +365,17 @@ class PostController {
               model: Like,
               attributes: ['liker']
             }],
-            attributes: ['title', 'UserUserId', 'createdAt', 'views'],  // TODO: Likes 배열 내 개수로 바꾸기
+            attributes: ['title', 'UserUserId', 'createdAt', 'views'],
             order: [['createdAt', 'DESC']]
           });
         }
       }
+
+      // Likes 배열 개수로 바꾸기
+      result = result?.map(e => e.dataValues);
+      result?.forEach(e => {
+        e.Likes = e.Likes.length;
+      });
 
       return res
         .status(200)

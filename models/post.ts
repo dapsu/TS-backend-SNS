@@ -16,7 +16,8 @@ class Post extends Model {
   public UserUserId!: string;
 
   public dataValues!: {
-    postId: number
+    postId: number,
+    Likes: any
   }
 
   public addLike!: HasManyAddAssociationMixin<Like, number>;
