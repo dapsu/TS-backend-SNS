@@ -22,6 +22,8 @@ class Post extends Model {
 
   public addLike!: HasManyAddAssociationMixin<Like, number>;
   public removeLike!: HasManyAddAssociationMixin<Like, number>;
+  public hasHashtags!: BelongsToManyAddAssociationsMixin<Hashtag, number>;
+  public getHashtags!: BelongsToManyAddAssociationsMixin<Hashtag, number>;
   public addHashtags!: BelongsToManyAddAssociationsMixin<Hashtag, number>;
 }
 
