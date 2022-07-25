@@ -341,6 +341,7 @@ class PostController {
           });
       }
 
+      // 초기 정렬 최신순(내림차순)으로 설정
       if (orderBy === 'ascending') {
         result = await Post.findAll({
           include: [{
