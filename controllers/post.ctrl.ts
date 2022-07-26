@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import sequelize from 'sequelize';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import Post from '../models/post';
 import Like from '../models/like';
 import Hashtag from '../models/hashtag';
@@ -58,7 +58,9 @@ class PostController {
       const userId = req.user.id;
       const postId = req.params.postId;
       let { title, content, hashtags } = req.body;
-      hashtags = hashtags.split(',');
+      if (hashtags) {
+        hashtags = hashtags.split(',');
+      }
 
       await Post.findOne({
         where: {
@@ -209,7 +211,6 @@ class PostController {
   }
 
   // 특정 게시글 조회
-  // TODO: 해시태그 기능
   static async getPost(req: Request, res: Response) {
     try {
       const postId = req.params.postId;
@@ -310,7 +311,7 @@ class PostController {
   // 게시글 목록 조회
   static async getList(req: Request, res: Response) {
     try {
-      let result;   // 조회 최종 결과물
+      let result: Array<any>;   // 조회 최종 결과물
       const orderBy = req.query.orderBy || 'descending';
       const search = req.query.search;
       const filtering = req.query.filtering;
@@ -394,25 +395,25 @@ class PostController {
           });
         }
       }
-
-      // Likes 배열 개수로 바꾸기
-      result = result?.map(e => e.dataValues);
-      result?.forEach(e => {
-        e.Likes = e.Likes.length;
-      });
-
+      
       // 페이징 기능
       let totalPosts = result!.length;
       if (skipPages >= totalPosts) {
         return res
-          .status(400)
-          .json({
-            message: 'pages, pageNum 값을 확인해주세요.'
-          });
+        .status(400)
+        .json({
+          message: 'pages, pageNum 값을 확인해주세요.'
+        });
       } else {
-        result?.splice(0, skipPages);
-        result?.splice(pages, totalPosts);
+        result!.splice(0, skipPages);
+        result!.splice(pages, totalPosts);
       }
+      
+      // Likes 배열 개수로 바꾸기
+      result = result!.map(value => value.dataValues);
+      result?.forEach(value => {
+        value.Likes = value.Likes.length;
+      });
 
       return res
         .status(200)
