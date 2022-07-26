@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import sequelize from 'sequelize';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import Post from '../models/post';
 import Like from '../models/like';
 import Hashtag from '../models/hashtag';
@@ -58,7 +58,9 @@ class PostController {
       const userId = req.user.id;
       const postId = req.params.postId;
       let { title, content, hashtags } = req.body;
-      hashtags = hashtags.split(',');
+      if (hashtags) {
+        hashtags = hashtags.split(',');
+      }
 
       await Post.findOne({
         where: {
@@ -209,7 +211,6 @@ class PostController {
   }
 
   // 특정 게시글 조회
-  // TODO: 해시태그 기능
   static async getPost(req: Request, res: Response) {
     try {
       const postId = req.params.postId;
