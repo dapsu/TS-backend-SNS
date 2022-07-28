@@ -249,7 +249,7 @@ class PostController {
           content: post.content,
           views: post.views + 1,
           likers: likers.map(obj => obj.dataValues.liker),
-          hashtags: hashtags
+          hashtags: hashtags.dataValues.tagName
         });
     } catch (err) {
       console.error(err);
@@ -347,6 +347,9 @@ class PostController {
           include: [{
             model: Like,
             attributes: ['liker']
+          }, {
+            model: Hashtag,
+            attributes: ['tagName']
           }],
           attributes: ['title', 'UserUserId', 'createdAt', 'views'],
           order: [['createdAt', 'ASC']]
@@ -356,6 +359,9 @@ class PostController {
           include: [{
             model: Like,
             attributes: ['liker']
+          }, {
+            model: Hashtag,
+            attributes: ['tagName']
           }],
           attributes: ['title', 'UserUserId', 'createdAt', 'views'],
           order: [['createdAt', 'DESC']]
@@ -374,6 +380,9 @@ class PostController {
             include: [{
               model: Like,
               attributes: ['liker']
+            }, {
+              model: Hashtag,
+              attributes: ['tagName']
             }],
             attributes: ['title', 'UserUserId', 'createdAt', 'views'],
             order: [['createdAt', 'ASC']]
@@ -388,11 +397,40 @@ class PostController {
             include: [{
               model: Like,
               attributes: ['liker']
+            }, {
+              model: Hashtag,
+              attributes: ['tagName']
             }],
             attributes: ['title', 'UserUserId', 'createdAt', 'views'],
             order: [['createdAt', 'DESC']]
           });
         }
+      }
+      result = result!.map(value => value.dataValues);  // 결과값 데이터 전처리
+      if (!result.length) {
+        return res
+          .status(400)
+          .json({
+            message: '해당 검색어에 대한 게시글이 없습니다.'
+          });
+      }
+
+
+      // 필터링 값이 존재할 때
+      if (filtering) {
+        result = result.filter(obj => {
+          let isValid = obj.Hashtag.dataValues.tagName.split(',');
+          if (isValid.includes(filtering)) {
+            return obj;
+          }
+        })
+      }
+      if (!result.length) {
+        return res
+          .status(400)
+          .json({
+            message: '해당 해시태그에 대한 게시글이 없습니다.'
+          });
       }
       
       // 페이징 기능
@@ -408,10 +446,10 @@ class PostController {
         result!.splice(pages, totalPosts);
       }
       
-      // Likes 배열 개수로 바꾸기
-      result = result!.map(value => value.dataValues);
+      // Likes 배열 개수로 수정 및 hashtag 데이터 전처리
       result?.forEach(value => {
         value.Likes = value.Likes.length;
+        value.Hashtag = value.Hashtag.dataValues.tagName;
       });
 
       return res
