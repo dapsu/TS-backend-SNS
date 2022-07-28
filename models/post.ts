@@ -1,4 +1,4 @@
-import { BelongsToManyAddAssociationsMixin, DataTypes, HasManyAddAssociationMixin, Model } from "sequelize";
+import { DataTypes, HasManyAddAssociationMixin, HasOneCreateAssociationMixin, HasOneGetAssociationMixin, Model } from "sequelize";
 import { dbType } from ".";
 import { sequelize } from "./sequelize";
 import Hashtag from "./hashtag";
@@ -22,9 +22,8 @@ class Post extends Model {
 
   public addLike!: HasManyAddAssociationMixin<Like, number>;
   public removeLike!: HasManyAddAssociationMixin<Like, number>;
-  public hasHashtags!: BelongsToManyAddAssociationsMixin<Hashtag, number>;
-  public getHashtags!: BelongsToManyAddAssociationsMixin<Hashtag, number>;
-  public addHashtags!: BelongsToManyAddAssociationsMixin<Hashtag, number>;
+  public createHashtag!: HasOneCreateAssociationMixin<Hashtag>;
+  public getHashtag!: HasOneGetAssociationMixin<Hashtag>;
 }
 
 Post.init({
@@ -59,7 +58,7 @@ Post.init({
 export const associate = (db: dbType) => {
   db.Post.belongsTo(db.User);
   db.Post.hasMany(db.Like);
-  db.Post.belongsToMany(db.Hashtag, { through: 'PostHashtag' });
+  db.Post.hasOne(db.Hashtag);
 };
 
 export default Post;
