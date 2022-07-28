@@ -13,29 +13,15 @@ class PostController {
     try {
       const userId = req.user.id;
       let { title, content, hashtags } = req.body;
-      hashtags = hashtags.split(',');
 
       const newPost = await Post.create({   // posts 테이블에 데이터 추가
         title: title,
         content: content,
         UserUserId: userId
       });
-
-      for (const hashtag of hashtags) {
-        const exHashtag = await Hashtag.findOne({
-          where: {
-            tagName: hashtag
-          }
-        });
-        if (exHashtag) {
-          newPost.addHashtags(<any>exHashtag);
-          continue;
-        }
-        const newHashtag = await Hashtag.create({
-          tagName: hashtag
-        });
-        newPost.addHashtags(<any>newHashtag);
-      }
+      await newPost.createHashtag({
+        tagName: hashtags
+      });
 
       return res
         .status(200)
@@ -58,16 +44,13 @@ class PostController {
       const userId = req.user.id;
       const postId = req.params.postId;
       let { title, content, hashtags } = req.body;
-      if (hashtags) {
-        hashtags = hashtags.split(',');
-      }
 
       await Post.findOne({
         where: {
           postId: postId
         }
       })
-        .then(post => {
+        .then(async (post) => {
           if (!post) {  // 존재하지 않는 게시글일 때
             return res
               .status(404)
@@ -87,6 +70,17 @@ class PostController {
           }
           if (content) {
             post.content = content;
+          }
+          if (hashtags) {
+            await Hashtag.findOne({
+              where: {
+                PostPostId: postId
+              }
+            })
+              .then(hashtag => {
+                hashtag!.tagName = hashtags;
+                hashtag!.save();
+              });
           }
 
           post.save()   // 수정사항 저장
@@ -244,13 +238,18 @@ class PostController {
         attributes: ['liker']
       });
 
+      const hashtags = await post.getHashtag({
+        attributes: ['tagName']
+      });
+
       return res
         .status(200)
         .json({
           title: post.title,
           content: post.content,
           views: post.views + 1,
-          likers: likers.map(obj => obj.dataValues.liker)
+          likers: likers.map(obj => obj.dataValues.liker),
+          hashtags: hashtags
         });
     } catch (err) {
       console.error(err);
