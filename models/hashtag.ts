@@ -7,6 +7,10 @@ class Hashtag extends Model {
   public tagName!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  public dataValues!: {
+    tagName: string,
+  }
 }
 
 Hashtag.init({
