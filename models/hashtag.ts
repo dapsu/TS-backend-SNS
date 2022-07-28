@@ -8,7 +8,9 @@ class Hashtag extends Model {
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
-  public PostHashtag!: string;
+  public dataValues!: {
+    tagName: string,
+  }
 }
 
 Hashtag.init({
@@ -25,7 +27,7 @@ Hashtag.init({
 });
 
 export const associate = (db: dbType) => {
-  db.Hashtag.belongsToMany(db.Post, { through: 'PostHashtag' });
+  db.Hashtag.belongsTo(db.Post);
 };
 
 export default Hashtag;
